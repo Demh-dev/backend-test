@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Backend Test</title>
+    </head>
+    <body>
+        <h1>Test Backend</h1>
+
+        <h2>Create User</h2>
+        <form id="userForm">
+            <input name="id" placeholder="ID" />
+            <input name="name" placeholder="Name" />
+            <button type="submit">Add User</button>
+        </form>
+
+        <h2>Users List</h2>
+        <button id="loadUsers">Load Users</button>
+        <ul id="usersList"></ul>
+
+        <script>
+            const userForm = document.getElementById("userForm");
+            const usersList = document.getElementById("usersList");
+            const loadUsers = document.getElementById("loadUsers");
+
+            userForm.addEventListener("submit", e => {
+                e.preventDefault();
+                const form = e.target;
+                fetch("http://localhost:3000/api/users", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: form.id.value,
+                        name: form.name.value
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(JSON.stringify(data));
+                    form.reset();
+                });
+            });
+
+            loadUsers.addEventListener("click", () => {
+                fetch("http://localhost:3000/api/users")
+                .then(res => res.json())
+                .then(users => {
+                    usersList.innerHTML = "";
+                    users.forEach(u => {
+                        const li = document.createElement("li");
+                        li.textContent = `${u.id}: ${u.name}`;
+                        usersList.appendChild(li);
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
